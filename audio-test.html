@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Corrected Audio Playback Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+        button { font-size: 2rem; padding: 20px 40px; cursor: pointer; }
+        #log { margin-top: 20px; font-size: 1.2rem; color: #333; }
+    </style>
+</head>
+<body>
+
+    <button onclick="playSound()">Test Audio</button>
+    <div id="log">Click the button to test...</div>
+
+    <script>
+        // 2. The function to be called on click
+        function playSound() {
+            const logElement = document.getElementById('log');
+            
+            if (typeof Howl === 'undefined') {
+                const errorMsg = "ERROR: Howler.js library not loaded!";
+                console.error(errorMsg);
+                logElement.textContent = errorMsg;
+                return;
+            }
+
+            console.log("Button clicked. Howler is loaded. Creating sound object...");
+            logElement.textContent = "Attempting to play...";
+
+            // 3. Create and play the sound inside the function
+            const sound = new Howl({
+                // ▼▼▼ THIS IS THE CORRECTED, VALID BASE64 STRING ▼▼▼
+                src: ['data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA'],
+                format: ['wav'],
+                onplay: function() {
+                    const successMsg = 'SUCCESS: Audio playback started!';
+                    console.log(successMsg);
+                    logElement.textContent = successMsg;
+                },
+                onloaderror: function(id, error) {
+                    const errorMsg = `ERROR: Failed to load audio. Details: ${error}`;
+                    console.error(errorMsg);
+                    logElement.textContent = errorMsg;
+                },
+                onplayerror: function(id, error) {
+                    const errorMsg = `ERROR: Playback was blocked by the browser. Details: ${error}`;
+                    console.error(errorMsg);
+                    logElement.textContent = errorMsg;
+                }
+            });
+
+            sound.play();
+        }
+    </script>
+</body>
+</html>
