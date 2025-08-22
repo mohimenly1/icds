@@ -11,8 +11,15 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ClinicStructureController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ScreenController;
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\DisplayController;
+use App\Http\Controllers\UnifiedContentController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+
+Route::get('/display/{screen:unique_key}', [DisplayController::class, 'show'])->name('screen.display');
 
 Route::get('/test-audio', function () {
     $textToTest = "مرحبا بالعالم";
@@ -42,7 +49,27 @@ Route::get('/doctors-management', [DoctorController::class, 'showManagementPage'
 
 // مجموعة مسارات محمية تتطلب تسجيل الدخول
 Route::middleware('auth')->group(function () {
+
+
+        // Unified Content Management Routes
+        Route::get('/unified-content', [UnifiedContentController::class, 'index'])->name('unified-content.index');
+        Route::post('/unified-content', [UnifiedContentController::class, 'store'])->name('unified-content.store');
+        Route::put('/unified-content/{unifiedContentSet}', [UnifiedContentController::class, 'update'])->name('unified-content.update');
+        Route::delete('/unified-content/{unifiedContentSet}', [UnifiedContentController::class, 'destroy'])->name('unified-content.destroy');
+
+
     // مسارات إدارة الأطباء
+        // User Management Routes
+        Route::get('/users-management', [UserManagementController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserManagementController::class, 'store'])->name('users.store'); // <-- المسار الجديد
+        Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+        Route::post('/screens', [ScreenController::class, 'store'])->name('screens.store');
+        Route::put('/screens/{screen}', [ScreenController::class, 'update'])->name('screens.update');
+        Route::delete('/screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy');
+        Route::get('/media', [MediaController::class, 'index'])->name('media.index');
+        Route::post('/media', [MediaController::class, 'store'])->name('media.store');
+        Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+        Route::get('/screens', [ScreenController::class, 'index'])->name('screens.index');
     Route::get('/clinic-structure', [ClinicStructureController::class, 'index'])->name('clinic-structure.index');
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
@@ -70,12 +97,15 @@ Route::middleware('auth')->group(function () {
 // تحديث مسار لوحة التحكم ليمرر كل البيانات اللازمة
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard', [
-        // جلب الأطباء مع علاقاتهم بالغرف والطوابق
-        'doctors' => Doctor::with('rooms.floor')->orderBy('name')->get(),
-        // جلب الطوابق مع الغرف التابعة لها
-        'floors' => Floor::with('rooms')->orderBy('level')->get(),
-        // جلب كل الغرف المتاحة للربط
-        'allRooms' => Room::with('doctors')->get(),
+        // حساب الإحصائيات في الـ backend وإرسالها في كائن واحد
+        'stats' => [
+            'totalDoctors' => Doctor::count(),
+            'availableDoctors' => Doctor::where('status', 'available')->count(),
+            'totalRooms' => Room::count(),
+            'occupiedRooms' => Room::has('doctors')->count(), 
+        ],
+        // جلب آخر 5 أطباء مع علاقاتهم
+        'latestDoctors' => Doctor::with('rooms')->latest()->take(5)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

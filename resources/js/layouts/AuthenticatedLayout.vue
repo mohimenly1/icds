@@ -4,6 +4,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 
 // Access user data from Inertia's shared props
 const user = usePage().props.auth.user;
+const roles = usePage().props.auth.roles;
 
 // State for mobile sidebar
 const sidebarOpen = ref(false);
@@ -24,26 +25,54 @@ const showingNavigationDropdown = ref(false);
                 </Link>
             </div>
             
-       <!-- Navigation Links -->
-       <nav class="flex-grow p-4 space-y-2">
-                <Link :href="route('dashboard')" :class="[route().current('dashboard') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                    <span>الرئيسية</span>
-                </Link>
-                <!-- Note: You will need to create these pages and routes later -->
-                <p class="px-3 pt-4 pb-2 text-xs font-semibold text-slate-400 uppercase">الإدارة</p>
-                <Link :href="route('doctors.index')" :class="['text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <span>إدارة الأطباء</span>
-                </Link>
-                <Link :href="route('clinic-structure.index')" :class="[route().current('clinic-structure.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 2 2 4-4"/></svg>
-                    <span>إدارة الغرف والطوابق</span>
-                </Link>
-                 <Link :href="route('schedules.index')":class="['text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                    <span>إدارة المواعيد</span>
-                </Link>
+            <!-- Navigation Links -->
+            <nav class="flex-grow p-4 space-y-2">
+                <!-- General Links (Visible to non-Screen Managers or Super Admins) -->
+                <template v-if="!roles.includes('Screen-Manager') || roles.includes('Super-Admin')">
+                    <Link :href="route('dashboard')" :class="[route().current('dashboard') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <span>الرئيسية</span>
+                    </Link>
+                    <p class="px-3 pt-4 pb-2 text-xs font-semibold text-slate-400 uppercase">الإدارة</p>
+                    <Link :href="route('doctors.index')" :class="[route().current('doctors.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>إدارة الأطباء</span>
+                    </Link>
+                    <Link :href="route('clinic-structure.index')" :class="[route().current('clinic-structure.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 2 2 4-4"/></svg>
+                        <span>إدارة الغرف والطوابق</span>
+                    </Link>
+                     <Link :href="route('schedules.index')" :class="[route().current('schedules.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                        <span>جداول الأطباء</span>
+                    </Link>
+                </template>
+                
+                <!-- Screen Management Section -->
+                <div v-if="$page.props.auth.can.includes('manage screens')">
+                    <p class="px-3 pt-4 pb-2 text-xs font-semibold text-slate-400 uppercase">إدارة المحتوى</p>
+                    <Link :href="route('screens.index')" :class="[route().current('screens.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M17 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>
+                        <span>إدارة الشاشات</span>
+                    </Link>
+                    <Link :href="route('media.index')" :class="[route().current('media.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <span>مكتبة الوسائط</span>
+                    </Link>
+                    <Link :href="route('unified-content.index')" :class="[route().current('unified-content.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5a9.5 9.5 0 0 1 9.5 9.5c0 3.52-1.92 6.58-4.68 8.13a2.5 2.5 0 0 1-3.64 0c-2.76-1.55-4.68-4.61-4.68-8.13a9.5 9.5 0 0 1 9.5-9.5Z"/></svg>
+                        <span>المحتوى الموحد</span>
+                    </Link>
+                </div>
+                
+                <!-- System Settings Section (Visible to Super Admins only) -->
+                <template v-if="roles.includes('Super-Admin')">
+                    <p class="px-3 pt-4 pb-2 text-xs font-semibold text-slate-400 uppercase">إعدادات النظام</p>
+                    <Link :href="route('users.index')" :class="[route().current('users.index') ? 'bg-teal-100 text-teal-700' : 'text-slate-600 hover:bg-slate-100', 'flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors']">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>إدارة المستخدمين</span>
+                    </Link>
+                </template>
             </nav>
         </aside>
 
@@ -81,7 +110,7 @@ const showingNavigationDropdown = ref(false);
             </div>
 
             <!-- Page Content Slot -->
-            <main class="flex-1 overflow-y-auto">
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8">
                 <slot />
             </main>
         </div>

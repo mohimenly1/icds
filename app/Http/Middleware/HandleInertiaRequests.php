@@ -45,12 +45,20 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
+                // إضافة صلاحيات وأدوار المستخدم هنا
+                'can' => $request->user() ? $request->user()->getPermissionsViaRoles()->pluck('name') : [],
+                'roles' => $request->user() ? $request->user()->getRoleNames() : [],
             ],
             'ziggy' => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            // إضافة رسائل التنبيه هنا
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }

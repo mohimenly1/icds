@@ -21,8 +21,6 @@ class Doctor extends Model
         'bio',
         'photo_url',
         'status',
-        'floor',
-        'room_id'
     ];
 
     public function rooms(): BelongsToMany
